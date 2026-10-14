@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CoronaryCare AI — API integration test</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .wrap{max-width:1100px;margin:0 auto;padding:1.4rem 1.6rem 2.5rem}
+  .bar{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin:1rem 0}
+  .bar input{width:280px;background:var(--bg-soft);border:1px solid var(--line);color:var(--text);
+    border-radius:8px;padding:.45rem .6rem;font-family:"JetBrains Mono",monospace;font-size:.8rem}
+  table.results{width:100%;border-collapse:collapse;font-size:.82rem}
+  table.results th{text-align:left;color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;padding:.45rem .6rem;border-bottom:1px solid var(--line)}
+  table.results td{padding:.5rem .6rem;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  td.st{font-weight:800;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+  .PASS{color:var(--good)} .FAIL{color:#f87171} .WARN{color:#fbbf24} .SKIP{color:var(--muted)}
+  td.detail{color:var(--muted);white-space:pre-wrap;word-break:break-word}
+  #summary{font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 style="margin:0 0 .2rem">API integration test</h1>
+  <p class="muted" style="margin:0">Run before every demo. Checks the endpoints and response shapes the dashboard depends on. Back to the <a href="index.html" style="color:var(--accent)">dashboard</a>.</p>
+
+  <div class="bar">
+    <label for="api" class="muted">API</label>
+    <input id="api" type="text" spellcheck="false" value="http://localhost:8000" />
+    <button id="run" class="btn btn-primary">Run tests</button>
+    <span id="summary"></span>
+  </div>
+
+  <div class="panel" style="padding:.4rem .8rem 1rem">
+    <table class="results" aria-live="polite">
+      <thead><tr><th>#</th><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+</div>
+<script src="contract.js"></script>
+<script src="test.js"></script>
+</body>
+</html>

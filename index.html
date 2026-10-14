@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vessical: CAD Clinical Decision Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28C8 21 3 16 3 10.5 3 6 6.5 3 10.5 3c2.5 0 4.5 1.2 5.5 3 1-1.8 3-3 5.5-3C25.5 3 29 6 29 10.5 29 16 24 21 16 28z' fill='%230e7490'/%3E%3Cpath d='M6 15h5l2-4 3 8 2.5-5.5L20 15h6' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M16 28C8 21 3 16 3 10.5 3 6 6.5 3 10.5 3c2.5 0 4.5 1.2 5.5 3 1-1.8 3-3 5.5-3C25.5 3 29 6 29 10.5 29 16 24 21 16 28z" fill="currentColor" opacity="0.18"/>
+      <path d="M16 26C9 20 4.5 15.4 4.5 10.6 4.5 7.2 7.2 4.5 10.6 4.5c2.2 0 4 1 5.4 2.7 1.4-1.7 3.2-2.7 5.4-2.7 3.4 0 6.1 2.7 6.1 6.1 0 4.8-4.5 9.4-11.5 15.4z" fill="currentColor"/>
+      <path d="M7 14.5h4.6l1.8-3.6 3 7.2 2.3-5 1.5 1.4H25" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <h1>Vessical</span></h1>
+      <p>Coronary Artery Disease - Clinical Decision Support</p>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div id="api-status" class="status-pill status-unknown">
+      <span class="dot"></span><span id="api-status-text">Checking API…</span>
+    </div>
+    <div class="api-settings">
+      <label for="api-url">API</label>
+      <input id="api-url" type="text" spellcheck="false" value="http://localhost:8000" />
+      <button id="api-save" class="btn btn-ghost btn-sm" title="Save API address">Save</button>
+    </div>
+    <button id="btn-clear-last" class="btn btn-ghost btn-sm" title="Forget the last prediction stored in this browser">Clear last result</button>
+  </div>
+</header>
+
+<div class="disclaimer-ribbon" role="note">
+  <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2 1 21h22L12 2zm0 6.5 7 11.5H5l7-11.5zM11 10v4h2v-4h-2zm0 5.5v2h2v-2h-2z" fill="currentColor"/></svg>
+  <span><strong>Clinical decision support only.</strong> Not a substitute for formal diagnosis by a qualified physician. Verify all outputs against angiographic findings.</span>
+</div>
+
+<main class="layout">
+
+  <!-- ===================== LEFT: PATIENT FORM ===================== -->
+  <section class="panel form-panel" aria-label="Patient data">
+    <div class="panel-head">
+      <div>
+        <h2><span class="step-num">01</span> Patient Profile</h2>
+        <p class="panel-sub">Enter non-invasive clinical parameters. Form is auto-generated from <code>/features</code> metadata with an offline fallback.</p>
+      </div>
+      <div class="head-actions">
+        <button id="btn-demo" class="btn btn-ghost" title="Fetch a real record from the dataset">
+          <svg viewBox="0 0 24 24" width="15" height="15"><path d="M19 13v6H5v-6H3v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6h-2zM11 6.83 8.41 9.41 7 8l5-5 5 5-1.41 1.41L13 6.83V16h-2V6.83z" fill="currentColor"/></svg>
+          Load demo patient
+        </button>
+        <button id="btn-reset" class="btn btn-ghost">Reset</button>
+      </div>
+    </div>
+    <div id="patient-form" class="form-groups"><!-- groups injected by app.js --></div>
+    <div class="form-footer">
+      <div class="footer-actions">
+      <button id="btn-predict" class="btn btn-primary btn-lg">
+        <svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/></svg>
+        Run CAD Risk Analysis
+      </button>
+      <button id="btn-copy-json" class="btn btn-ghost" type="button" title="Copy the current form as a POST /predict JSON payload">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>
+        Copy payload JSON
+      </button>
+      </div>
+      <label class="chk"><input type="checkbox" id="opt-explain" checked /> <span>Include LIME explanation</span></label>
+    </div>
+  </section>
+
+  <!-- ===================== RIGHT: RESULTS ===================== -->
+  <section class="results-col" aria-label="Results">
+
+    <!-- Gauge -->
+    <div class="panel" id="panel-cad">
+      <div class="panel-head">
+        <div>
+          <h2><span class="step-num">02</span> CAD Assessment</h2>
+          <p class="panel-sub">Model-estimated probability of ≥50% diameter narrowing on angiography.</p>
+        </div>
+      </div>
+      <div class="cad-body" id="cad-body">
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 220 132">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%"  stop-color="#10b981"/>
+                <stop offset="55%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#ef4444"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 120 A 90 90 0 0 1 200 120" class="gauge-track"/>
+            <path id="gauge-arc" d="M 20 120 A 90 90 0 0 1 200 120" class="gauge-arc"/>
+            <g id="gauge-needle" class="gauge-needle"><line x1="110" y1="120" x2="110" y2="45"/></g>
+            <circle cx="110" cy="120" r="7" class="gauge-hub"/>
+          </svg>
+          <div class="gauge-readout">
+            <span id="gauge-value" aria-live="polite">—</span>
+            <span id="gauge-band" class="band band-idle">Awaiting input</span>
+          </div>
+        </div>
+        <div class="cad-side">
+          <div class="stat-row"><span class="stat-label">Predicted status</span><span id="cad-status" class="stat-value" aria-live="polite">—</span></div>
+          <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value" id="cad-model">Ensemble · Z-Alizadeh Sani ext.</span></div>
+          <div class="stat-row"><span class="stat-label">Analysis time</span><span class="stat-value" id="cad-time">—</span></div>
+          <div id="truth-box" class="truth-box hidden">
+            <h4>Ground truth <span class="muted">(dataset record)</span></h4>
+            <div id="truth-chips" class="truth-chips"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vessels -->
+    <div class="panel" id="panel-vessels">
+      <div class="panel-head">
+        <div>
+          <h2><span class="step-num">03</span> Vessel-Level Stenosis</h2>
+          <p class="panel-sub">Per-artery stenosis probability. Select a vessel to inspect it on the schematic.</p>
+        </div>
+      </div>
+      <div class="vessel-layout">
+        <div class="heart-schematic" role="img" aria-label="Schematic of the coronary arteries">
+          <svg viewBox="0 0 340 322" id="heart-svg">
+            <defs>
+              <radialGradient id="heartFill" cx="0.5" cy="0.42" r="0.75">
+                <stop offset="0%" stop-color="#3b2b35"/>
+                <stop offset="100%" stop-color="#221a22"/>
+              </radialGradient>
+              <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="4.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <!-- heart silhouette -->
+            <path class="heart-shape" d="M170 62 C 118 22, 42 66, 46 152 C 50 232, 118 284, 170 290 C 222 284, 290 232, 294 152 C 298 66, 222 22, 170 62 Z" fill="url(#heartFill)" stroke="#5b4451" stroke-width="2"/>
+            <!-- aorta hint -->
+            <path class="aorta-hint" d="M168 64 C 166 36, 196 22, 214 34 C 232 46, 230 72, 216 84" />
+            <!-- vessels -->
+            <path id="vessel-LCX" class="vessel" d="M158 76 C 116 88, 82 118, 74 158 C 69 186, 80 208, 98 220"/>
+            <path id="vessel-LAD" class="vessel" d="M168 72 C 156 112, 176 150, 162 194 C 154 224, 163 252, 160 274"/>
+            <path id="vessel-RCA" class="vessel" d="M184 74 C 228 86, 258 116, 266 156 C 271 186, 258 212, 238 224"/>
+            <!-- labels -->
+            <g class="vessel-label" data-vessel="LCX" tabindex="0" role="button" aria-label="Inspect LCX">
+              <rect x="6" y="150" width="52" height="24" rx="12"/>
+              <text x="32" y="166" text-anchor="middle">LCX</text>
+            </g>
+            <g class="vessel-label" data-vessel="LAD" tabindex="0" role="button" aria-label="Inspect LAD">
+              <rect x="144" y="288" width="52" height="24" rx="12"/>
+              <text x="170" y="304" text-anchor="middle">LAD</text>
+            </g>
+            <g class="vessel-label" data-vessel="RCA" tabindex="0" role="button" aria-label="Inspect RCA">
+              <rect x="282" y="150" width="52" height="24" rx="12"/>
+              <text x="308" y="166" text-anchor="middle">RCA</text>
+            </g>
+          </svg>
+          <p class="schematic-note">Schematic illustration — not to anatomical scale</p>
+        </div>
+        <div class="vessel-cards" id="vessel-cards"><!-- injected --></div>
+      </div>
+    </div>
+
+    <!-- Explanation -->
+    <div class="panel" id="panel-explain">
+      <div class="panel-head">
+        <div>
+          <h2><span class="step-num">04</span> Explainable</h2>
+          <p class="panel-sub">Local (LIME) contributions for this patient, signed impact on model output vs. average cohort profile.</p>
+        </div>
+        <div class="tabbar" id="explain-tabs" role="tablist" aria-label="Explanation target">
+          <button class="tab active" id="tab-CAD" data-target="CAD" role="tab" aria-selected="true"  aria-controls="explain-body">CAD</button>
+          <button class="tab"        id="tab-LAD" data-target="LAD" role="tab" aria-selected="false" aria-controls="explain-body" tabindex="-1">LAD</button>
+          <button class="tab"        id="tab-LCX" data-target="LCX" role="tab" aria-selected="false" aria-controls="explain-body" tabindex="-1">LCX</button>
+          <button class="tab"        id="tab-RCA" data-target="RCA" role="tab" aria-selected="false" aria-controls="explain-body" tabindex="-1">RCA</button>
+        </div>
+      </div>
+      <div id="explain-body" class="explain-body" role="tabpanel" aria-labelledby="tab-CAD">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" width="34" height="34"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.5 3 5.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3c1.8-1.3 3-3.4 3-5.7a7 7 0 0 0-7-7zm-2 19a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-1h-4v1z" fill="currentColor"/></svg>
+          <p>Run an analysis to reveal the physiological factor breakdown.</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- ===================== METRICS ===================== -->
+<section class="panel metrics-panel" aria-label="Model metrics">
+  <div class="panel-head">
+    <div>
+      <h2><span class="step-num">05</span> Model Validation</h2>
+      <p class="panel-sub">Hold-out performance and global permutation importance, served live from <code>/metrics</code>.</p>
+    </div>
+    <button id="btn-refresh-metrics" class="btn btn-ghost btn-sm">Refresh</button>
+  </div>
+  <div id="metrics-body"><div class="empty-state small"><p>Connect to the API to load validation metrics.</p></div></div>
+</section>
+
+<footer class="footer">
+  <p>Vessical · Hackathon prototype · Trained on the Extension of Z-Alizadeh Sani dataset (UCI ML Repository, 303 records, 59 features).</p>
+  <p class="muted">For clinical decision support / educational purposes only. NOT a substitute for formal diagnosis by a qualified physician.</p>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="contract.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
