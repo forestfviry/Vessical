@@ -1,12 +1,13 @@
 {
-  "functions": {
-    "main.py": {
-      "runtime": "@vercel/python@4.3.1",
-      "memory": 1024,
-      "maxDuration": 60
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "500mb" }
     }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/main.py" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "main.py" }
   ]
 }
