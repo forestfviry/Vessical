@@ -1,4 +1,4 @@
-# CoronaryCare AI — Frontend
+# Vessical — Frontend
 
 Professional single-page dashboard for the Z-Alizadeh Sani CAD prediction API
 (FastAPI backend). No build step, no framework, no external JS dependencies.
