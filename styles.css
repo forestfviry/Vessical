@@ -1,3 +1,7 @@
+/* Vessical — CoronaryCare AI dashboard styles
+ * Merged: original dashboard + 3D heart schematic upgrade.
+ * Old .heart-shape / .aorta-hint rules removed (superseded by inline SVG styling).
+ */
 :root{
   --bg:#0d1117;
   --bg-soft:#11161d;
@@ -116,7 +120,6 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 
 /* ---------------- Form ---------------- */
 .form-groups{padding:.4rem 1.25rem 1rem}
-/* groups are <details>: all open on wide screens, closed by default on narrow ones (item 16) */
 .fieldset{border:1px solid var(--line-soft);border-radius:11px;margin-top:.9rem;overflow:hidden;background:rgba(11,15,21,.18)}
 .fieldset>summary{
   list-style:none;cursor:pointer;user-select:none;
@@ -146,7 +149,6 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 .field .hint{font-size:.68rem;color:#5c6778;margin:0}
 .field .hint.err{color:#f87171}
 
-/* segmented Y/N control */
 .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg-soft)}
 .seg button{
   flex:1;background:transparent;border:none;color:var(--muted);padding:.46rem 0;
@@ -170,7 +172,6 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 .gauge{width:100%;display:block}
 .gauge-track{fill:none;stroke:#242e3d;stroke-width:15;stroke-linecap:round}
 .gauge-arc{fill:none;stroke:url(#gaugeGrad);stroke-width:15;stroke-linecap:round;
-  /* stroke-dasharray is set from JS (const ARC in app.js) so the two never drift apart */
   stroke-dashoffset:283;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}
 .gauge-needle{transform-box:view-box;transform-origin:110px 120px;transform:rotate(-90deg);transition:transform 1s cubic-bezier(.22,1,.36,1)}
 .gauge-needle line{stroke:#e8edf4;stroke-width:3;stroke-linecap:round}
@@ -201,8 +202,33 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 /* ---------------- Vessels ---------------- */
 .vessel-layout{display:grid;grid-template-columns:300px 1fr;gap:1.3rem;padding:1.1rem 1.25rem 1.3rem;align-items:center}
 .heart-schematic svg{width:100%;display:block}
-.heart-shape{filter:drop-shadow(0 8px 20px rgba(0,0,0,.45))}
-.aorta-hint{fill:none;stroke:#4a3b46;stroke-width:10;stroke-linecap:round}
+
+/* ============ 3D heart schematic (upgrade) ============ */
+.heart-schematic{perspective:900px}
+#heart-svg{
+  transition:transform .15s ease-out;
+  transform-style:preserve-3d;
+  will-change:transform;
+  filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));
+}
+/* heartbeat: origin fixed in viewBox units so it never drifts */
+#heart-body{
+  transform-box:view-box;
+  transform-origin:170px 170px;
+  animation:heartbeat 1.6s ease-in-out infinite;
+}
+@keyframes heartbeat{
+  0%,100%{transform:scale(1)}
+  12%     {transform:scale(1.025)}
+  24%     {transform:scale(1)}
+  36%     {transform:scale(1.015)}
+}
+@media (prefers-reduced-motion:reduce){
+  #heart-body{animation:none}
+  #heart-svg{transition:none}
+}
+/* ============ end 3D heart schematic ============ */
+
 .vessel{fill:none;stroke:#3d4b60;stroke-width:7;stroke-linecap:round;transition:stroke .3s, stroke-width .3s, opacity .3s;cursor:pointer}
 .vessel.active{stroke-width:10}
 .vessel-label{cursor:pointer}
@@ -288,7 +314,7 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ---------------- Keyboard focus (item 15) ---------------- */
+/* ---------------- Keyboard focus ---------------- */
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .vcard:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,211,238,.28)}
 .vessel-label:focus-visible{outline:none}
@@ -299,8 +325,6 @@ code{font-family:"JetBrains Mono",monospace;font-size:.82em;background:#0b0f15;b
 .seg button:focus-visible,.fieldset>summary:focus-visible{outline-offset:-2px}
 
 /* ---------------- Responsive ---------------- */
-/* wide screens: the form is a sticky left rail that scrolls internally, so
-   the gauge/vessels stay in view next to it (item 16a) */
 @media (min-width:1181px){
   .form-panel{position:sticky;top:84px;display:flex;flex-direction:column;max-height:calc(100vh - 100px)}
   .form-panel .form-groups{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#35435a transparent}
