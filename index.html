@@ -21,7 +21,7 @@
       <path d="M7 14.5h4.6l1.8-3.6 3 7.2 2.3-5 1.5 1.4H25" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div>
-      <h1>Vessical</span></h1>
+      <h1>Vessical</h1>
       <p>Coronary Artery Disease - Clinical Decision Support</p>
     </div>
   </div>
@@ -110,7 +110,7 @@
         </div>
         <div class="cad-side">
           <div class="stat-row"><span class="stat-label">Predicted status</span><span id="cad-status" class="stat-value" aria-live="polite">—</span></div>
-          <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value" id="cad-model">Ensemble · Z-Alizadeh Sani ext.</span></div>
+          <div class="stat-row"><span class="stat-label">Model</span><span class="stat-value" id="cad-model">Random forest · Z-Alizadeh Sani ext.</span></div>
           <div class="stat-row"><span class="stat-label">Analysis time</span><span class="stat-value" id="cad-time">—</span></div>
           <div id="truth-box" class="truth-box hidden">
             <h4>Ground truth <span class="muted">(dataset record)</span></h4>
@@ -129,8 +129,8 @@
         </div>
       </div>
       <div class="vessel-layout">
-        <div class="heart-schematic" role="img" aria-label="Schematic of the coronary arteries">
-          <svg viewBox="0 0 340 322" id="heart-svg">
+        <div class="heart-schematic" role="group" aria-label="Schematic of the coronary arteries">
+          <svg viewBox="0 0 340 322" id="heart-svg" role="img" aria-label="Heart schematic with LCX, LAD and RCA arteries coloured by predicted stenosis risk">
             <defs>
               <radialGradient id="heartFill" cx="0.5" cy="0.42" r="0.75">
                 <stop offset="0%" stop-color="#3b2b35"/>
@@ -173,7 +173,7 @@
     <div class="panel" id="panel-explain">
       <div class="panel-head">
         <div>
-          <h2><span class="step-num">04</span> Explainable</h2>
+          <h2><span class="step-num">04</span> Explainability</h2>
           <p class="panel-sub">Local (LIME) contributions for this patient, signed impact on model output vs. average cohort profile.</p>
         </div>
         <div class="tabbar" id="explain-tabs" role="tablist" aria-label="Explanation target">
